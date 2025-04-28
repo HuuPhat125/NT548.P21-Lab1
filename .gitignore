@@ -3,6 +3,8 @@
 **/*.txt
 __pycache__/
 .pytest_cache/
+*.tfplan
+
 
 # Local .terraform directories
 **/.terraform/*
