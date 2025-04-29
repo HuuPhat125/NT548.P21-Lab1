@@ -9,3 +9,9 @@ variable "nat_gateway_id" {
 variable "name" {
   type = string
 }
+
+variable "private_subnet_id" {
+  description = "ID of the private subnet to associate with this route table"
+  type        = string
+}
+

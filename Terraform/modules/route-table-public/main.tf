@@ -10,3 +10,8 @@ resource "aws_route" "default_route" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = var.internet_gateway_id
 }
+
+resource "aws_route_table_association" "public" {
+  subnet_id      = var.public_subnet_id
+  route_table_id = aws_route_table.public.id
+}

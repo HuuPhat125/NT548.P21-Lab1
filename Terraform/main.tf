@@ -43,6 +43,7 @@ module "route_table_public" {
   vpc_id              = module.vpc.vpc_id
   internet_gateway_id = module.internet_gateway.igw_id
   name                = "public-rt"
+  public_subnet_id    = module.public_subnet.subnet_id
 }
 
 module "route_table_private" {
@@ -50,6 +51,7 @@ module "route_table_private" {
   vpc_id          = module.vpc.vpc_id
   nat_gateway_id  = module.nat_gateway.nat_gateway_id
   name            = "private-rt"
+  private_subnet_id = module.private_subnet.subnet_id
 }
 
 
