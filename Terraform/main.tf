@@ -31,3 +31,23 @@ module "private_subnet" {
   map_public_ip   = false
   name            = "private-subnet"
 }
+
+module "nat_gateway" {
+  source            = "./modules/nat-gateway"
+  public_subnet_id  = module.public_subnet.subnet_id
+}
+
+
+module "route_table_public" {
+  source              = "./modules/route-table-public"
+  vpc_id              = module.vpc.vpc_id
+  internet_gateway_id = module.internet_gateway.igw_id
+  name                = "public-rt"
+}
+
+module "route_table_private" {
+  source          = "./modules/route-table-private"
+  vpc_id          = module.vpc.vpc_id
+  nat_gateway_id  = module.nat_gateway.nat_gateway_id
+  name            = "private-rt"
+}
