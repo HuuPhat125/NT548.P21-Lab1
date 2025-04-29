@@ -51,3 +51,40 @@ module "route_table_private" {
   nat_gateway_id  = module.nat_gateway.nat_gateway_id
   name            = "private-rt"
 }
+
+
+
+module "sg_public" {
+  source         = "./modules/security-group-public"
+  vpc_id         = module.vpc.vpc_id
+  allowed_ssh_ip = var.allowed_ssh_ip
+}
+
+module "sg_private" {
+  source         = "./modules/security-group-private"
+  vpc_id         = module.vpc.vpc_id
+  public_sg_id   = module.sg_public.sg_id
+}
+
+
+module "ec2_public" {
+  source               = "./modules/ec2"
+  ami                  = var.ami
+  instance_type        = var.instance_type
+  subnet_id            = module.public_subnet.subnet_id
+  key_name             = var.key_name
+  sg_id                = module.sg_public.sg_id
+  associate_public_ip  = true
+  name                 = "public-ec2"
+}
+
+module "ec2_private" {
+  source               = "./modules/ec2"
+  ami                  = var.ami
+  instance_type        = var.instance_type
+  subnet_id            = module.private_subnet.subnet_id
+  key_name             = var.key_name
+  sg_id                = module.sg_private.sg_id
+  associate_public_ip  = false
+  name                 = "private-ec2"
+}

@@ -23,3 +23,25 @@ variable "az_1" {
   description = "Availability Zone"
   type        = string
 }
+
+variable "ami" {
+  description = "AMI ID for EC2"
+  type        = string
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "Key pair name for EC2"
+  type        = string
+}
+
+variable "allowed_ssh_ip" {
+  description = "Allowed IP for SSH access"
+  type        = string
+}
+
