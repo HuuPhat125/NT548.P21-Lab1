@@ -15,7 +15,20 @@ Resources:
       Parameters:
         VpcCIDR: !Ref VpcCidr
 
+  InternetGatewayStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/internet-gateway.yaml"
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        Name: "my-igw"
+
 Outputs:
   VpcId:
     Description: VPC ID
     Value: !GetAtt VPCStack.Outputs.VpcId
+
+  InternetGatewayId:
+    Description: Internet Gateway ID
+    Value: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
