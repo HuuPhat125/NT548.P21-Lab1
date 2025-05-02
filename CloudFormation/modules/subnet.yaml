@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Subnet Module"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: The ID of the VPC
+
+  SubnetCIDR:
+    Type: String
+    Description: CIDR block for the subnet
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for the subnet
+
+  MapPublicIP:
+    Type: String
+    Description: Whether to map public IP on launch
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: "false"
+
+  SubnetName:
+    Type: String
+    Description: Name tag for the subnet
+
+Resources:
+  Subnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VpcId
+      CidrBlock: !Ref SubnetCIDR
+      AvailabilityZone: !Ref AvailabilityZone
+      MapPublicIpOnLaunch: !Ref MapPublicIP
+      Tags:
+        - Key: Name
+          Value: !Ref SubnetName
+
+Outputs:
+  SubnetId:
+    Description: ID of the created subnet
+    Value: !Ref Subnet
+    Export:
+      Name: !Sub ${AWS::StackName}-SubnetId

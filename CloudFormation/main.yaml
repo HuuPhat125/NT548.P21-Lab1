@@ -7,6 +7,20 @@ Parameters:
     Default: "10.0.0.0/16"
     Description: CIDR block for VPC
 
+  PublicSubnetCidr:
+    Type: String
+    Default: "10.0.1.0/24"
+    Description: CIDR block for public subnet
+
+  PrivateSubnetCidr:
+    Type: String
+    Default: "10.0.2.0/24"
+    Description: CIDR block for private subnet
+
+  AvailabilityZone:
+    Type: AWS::EC2::AvailabilityZone::Name
+    Description: Availability Zone for subnets
+
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -24,6 +38,30 @@ Resources:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         Name: "my-igw"
 
+  PublicSubnet:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/subnet.yaml"
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetCIDR: !Ref PublicSubnetCidr
+        AvailabilityZone: !Ref AvailabilityZone
+        MapPublicIP: "true"
+        SubnetName: "public-subnet"
+
+  PrivateSubnet:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/subnet.yaml"
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetCIDR: !Ref PrivateSubnetCidr
+        AvailabilityZone: !Ref AvailabilityZone
+        MapPublicIP: "false"
+        SubnetName: "private-subnet"
+
 Outputs:
   VpcId:
     Description: VPC ID
@@ -32,3 +70,11 @@ Outputs:
   InternetGatewayId:
     Description: Internet Gateway ID
     Value: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
+
+  PublicSubnetId:
+    Description: Public Subnet ID
+    Value: !GetAtt PublicSubnet.Outputs.SubnetId
+
+  PrivateSubnetId:
+    Description: Private Subnet ID
+    Value: !GetAtt PrivateSubnet.Outputs.SubnetId
