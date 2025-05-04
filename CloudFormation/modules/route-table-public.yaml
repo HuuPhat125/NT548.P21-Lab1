@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Public Route Table Module"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description:
+
+  InternetGatewayId:
+    Type: String
+    Description:
+
+  SubnetId:
+    Type: String
+    Description:
+
+Resource:
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tag:
+        Name: !Ref ${AWS::StackName}-Public
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      GatewayId: !Ref InternetGatewayId
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetId
+      RouteTableId: !Ref PublicRouteTable
+
+Output:
+  PublicRouteTableId:
+    Description: ID of the created Public Route Table
+    Value: !Ref PublicRouteTable
+    Export:
+      Name: !Sub ${AWS::StackName}-PublicRouteTable

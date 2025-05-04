@@ -62,6 +62,35 @@ Resources:
         MapPublicIP: "false"
         SubnetName: "private-subnet"
 
+  NATGatewayStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/subnet.yaml"
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        PublicSubnetID: !Ref PublicSubnetCidr
+
+  PrivateRouteTable:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/route-table-private.yaml"
+      Parameter:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetId: !Ref PublicSubnetCidr
+        NATGatewayId: !GetAtt NATGatewayStack.Outputs.NATGatewayID
+
+  PublicRouteTable:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/route-table-private.yaml"
+    Parameter:
+      VpcId: !GetAtt VPCStack.Outputs.VpcId
+      SubnetId: !Ref PublicSubnetCidr
+      InternetGatewayId: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
+
 Outputs:
   VpcId:
     Description: VPC ID
@@ -78,3 +107,7 @@ Outputs:
   PrivateSubnetId:
     Description: Private Subnet ID
     Value: !GetAtt PrivateSubnet.Outputs.SubnetId
+
+  NATGateWayId:
+    Value: !GetAtt NATGatewayStack.Outputs.NATGatewayID
+    Description: NAT Gateway ID

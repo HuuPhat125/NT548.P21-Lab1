@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Private Route Table Module"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description:
+
+  NATGatewayId:
+    Type: String
+    Description:
+
+  SubnetId:
+    Type: String
+    Description:
+
+Resource:
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tag:
+        Name: !Ref ${AWS::StackName}-Private
+
+  RouteNATGateway:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: "0.0.0.0/0"
+      NatGatewayId: !Ref NATGatewayId
+
+  PrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetId
+      RouteTableId: !Ref PrivateRouteTable
+
+Output:
+  PrivateRouteTableId:
+    Description: ID of the created Private Route Table
+    Value: !Ref PrivateRouteTable
+    Export:
+      Name: !Sub ${AWS::StackName}-PrivateRouteTable
