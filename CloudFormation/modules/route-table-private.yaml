@@ -14,16 +14,22 @@ Parameters:
     Type: String
     Description:
 
-Resource:
+  Name:
+    Type: String
+    Description:
+
+Resources:
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcId
-      Tag:
-        Name: !Ref ${AWS::StackName}-Private
+      Tags:
+        - Key: Name
+          Value: !Ref Name
 
   RouteNATGateway:
     Type: AWS::EC2::Route
+    DependsOn: PrivateRouteTable
     Properties:
       RouteTableId: !Ref PrivateRouteTable
       DestinationCidrBlock: "0.0.0.0/0"
@@ -31,11 +37,12 @@ Resource:
 
   PrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PrivateRouteTable
     Properties:
       SubnetId: !Ref SubnetId
       RouteTableId: !Ref PrivateRouteTable
 
-Output:
+Outputs:
   PrivateRouteTableId:
     Description: ID of the created Private Route Table
     Value: !Ref PrivateRouteTable

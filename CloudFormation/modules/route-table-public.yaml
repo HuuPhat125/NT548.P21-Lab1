@@ -14,16 +14,22 @@ Parameters:
     Type: String
     Description:
 
+  Name:
+    Type: String
+    Description:
+
 Resource:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VpcId
-      Tag:
-        Name: !Ref ${AWS::StackName}-Public
+      Tags:
+        - Key: Name
+          Value: !Ref Name
 
   PublicRoute:
     Type: AWS::EC2::Route
+    DependsOn: PublicRouteTable
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: "0.0.0.0/0"
@@ -31,11 +37,12 @@ Resource:
 
   PublicSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
+    DependsOn: PublicRoute
     Properties:
       SubnetId: !Ref SubnetId
       RouteTableId: !Ref PublicRouteTable
 
-Output:
+Outputs:
   PublicRouteTableId:
     Description: ID of the created Public Route Table
     Value: !Ref PublicRouteTable

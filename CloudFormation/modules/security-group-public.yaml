@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instance"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: "VPC ID for the security group"
+
+  AllowedSSHIp:
+    Type: String
+    Description: "CIDR block for allowed SSH access"
+
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VpcId
+      GroupName: "public-sg"
+      SecurityGroupIngress:
+        - CidrIp: !Ref AllowedSSHIp
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          FromPort: 0
+          ToPort: 0
+          CidrIp: 0.0.0.0/0
+
+      Tags:
+        - Key: Name
+          Value: public-sg
+
+Outputs:
+  PublicSGId:
+    Value: !Ref SecurityGroup

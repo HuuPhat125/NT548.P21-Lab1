@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "EC2 Instance"
+
+Parameters:
+  AMI:
+    Type: String
+    Description: "AMI ID for EC2"
+
+  SubnetId:
+    Type: String
+    Description: "CIDR block for subnet"
+
+  InstanceType:
+    Type: String
+    Description: "EC2 instance type"
+
+  KeyName:
+    Type: String
+    Description: "Key pair name for EC2"
+
+  SecurityGroupId:
+    Type: String
+    Description: Security Group ID
+
+  AssociatePublicIp:
+    Type: String
+    AllowedValues: ["true", "false"]
+    Description: Whether to associate public IP address
+
+  InstanceName:
+    Type: String
+    Description: Name tag for EC2 instance
+
+Resources:
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AMI
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: !Ref AssociatePublicIp
+          DeviceIndex: "0"
+          SubnetId: !Ref SubnetId
+          GroupSet:
+            - !Ref SecurityGroupId
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceName
+
+Outputs:
+  InstanceId:
+    Value: !Ref EC2Instance
+
+  PrivateIP:
+    Value: !GetAtt EC2Instance.PrivateIp
+
+  PublicIP:
+    Value: !GetAtt EC2Instance.PublicIp

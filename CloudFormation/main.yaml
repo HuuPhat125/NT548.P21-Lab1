@@ -18,8 +18,25 @@ Parameters:
     Description: CIDR block for private subnet
 
   AvailabilityZone:
-    Type: AWS::EC2::AvailabilityZone::Name
+    Type: String
     Description: Availability Zone for subnets
+
+  AllowedSSHIp:
+    Type: String
+    Description: Allowed IP for SSH access
+
+  AMI:
+    Type: String
+    Description: "AMI ID for EC2"
+
+  InstanceType:
+    Type: String
+    Default: "t2.micro"
+    Description: "EC2 instance type"
+
+  KeyName:
+    Type: String
+    Description: "Key pair name for EC2"
 
 Resources:
   VPCStack:
@@ -64,12 +81,11 @@ Resources:
 
   NATGatewayStack:
     Type: AWS::CloudFormation::Stack
-    DependsOn: VPCStack
+    DependsOn: [PublicSubnet, InternetGatewayStack]
     Properties:
-      TemplateURL: "./modules/subnet.yaml"
+      TemplateURL: "./modules/internet-gateway.yaml"
       Parameters:
-        VpcId: !GetAtt VPCStack.Outputs.VpcId
-        PublicSubnetID: !Ref PublicSubnetCidr
+        PublicSubnetID: !GetAtt PublicSubnet.Outputs.SubnetId
 
   PrivateRouteTable:
     Type: AWS::CloudFormation::Stack
@@ -78,18 +94,66 @@ Resources:
       TemplateURL: "./modules/route-table-private.yaml"
       Parameter:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
-        SubnetId: !Ref PublicSubnetCidr
+        SubnetId: !GetAtt PrivateSubnet.Outputs.SubnetId
         NATGatewayId: !GetAtt NATGatewayStack.Outputs.NATGatewayID
+        Name: private-rt
 
   PublicRouteTable:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/route-table-private.yaml"
-    Parameter:
-      VpcId: !GetAtt VPCStack.Outputs.VpcId
-      SubnetId: !Ref PublicSubnetCidr
-      InternetGatewayId: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
+      TemplateURL: "./modules/route-table-public.yaml"
+      Parameter:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        SubnetId: !GetAtt PublicSubnet.Outputs.SubnetId
+        InternetGatewayId: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
+        Name: public-rt
+
+  SGPublicStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/security-group-public.yaml"
+      Parameter:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        AllowedSSHIp: !Ref AllowedSSHIp
+
+  SGPrivateStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/security-group-public.yaml"
+      Parameter:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        PublicSecurityGroupId: !GetAtt SGPublicStack.Outputs.PublicSGId
+
+  PublicEC2Instance:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/ec2.yaml"
+      Parameter:
+        AMI: !Ref AMI
+        SubnetId: !GetAtt PublicSubnet.Outputs.SubnetId
+        InstanceType: !Ref InstanceType
+        KeyName: !Ref KeyName
+        SecurityGroupId: !GetAtt SGPublicStack.Outputs.PublicSGId
+        AssociatePublicIp: true
+        InstanceName: public-ec2
+
+  PrivateEC2Instance:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VPCStack
+    Properties:
+      TemplateURL: "./modules/ec2.yaml"
+      Parameter:
+        AMI: !Ref AMI
+        SubnetId: !GetAtt PrivateSubnet.Outputs.SubnetId
+        InstanceType: !Ref InstanceType
+        KeyName: !Ref KeyName
+        SecurityGroupId: !GetAtt SGPrivateStack.Outputs.PrivateSGId
+        AssociatePrivateIp: false
+        InstanceName: Private-ec2
 
 Outputs:
   VpcId:
@@ -111,3 +175,15 @@ Outputs:
   NATGateWayId:
     Value: !GetAtt NATGatewayStack.Outputs.NATGatewayID
     Description: NAT Gateway ID
+
+  PublicEc2Id:
+    Value: !GetAtt PublicEC2Instance.Outputs.InstanceId
+
+  PublicEc2IP:
+    Value: !GetAtt PublicEC2Instance.Outputs.PublicIP
+
+  PrivateEc2Id:
+    Value: !GetAtt PrivateEC2Instance.Outputs.InstanceId
+
+  PrivateEc2Ip:
+    Value: !GetAtt PrivateEC2Instance.Outputs.PrivateIP

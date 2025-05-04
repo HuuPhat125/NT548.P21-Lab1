@@ -2,13 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "NAT Gateway Module"
 
 Parameters:
-  VpcId:
-    Type:
-    Description:
-
   PublicSubnetID:
-    Type:
-    Description:
+    Type: String
+    Description: "ID of the public subnet"
 
 Resources:
   ElasticIP:
