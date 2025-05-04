@@ -16,6 +16,7 @@ Resources:
     Properties:
       VpcId: !Ref VpcId
       GroupName: "public-sg"
+      GroupDescription: "Security group for public instances" # Added required description
       SecurityGroupIngress:
         - CidrIp: !Ref AllowedSSHIp
           FromPort: 22

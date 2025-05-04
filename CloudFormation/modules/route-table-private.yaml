@@ -4,19 +4,19 @@ Description: "Private Route Table Module"
 Parameters:
   VpcId:
     Type: String
-    Description:
+    Description: "VPC ID for the security group"
 
   NATGatewayId:
     Type: String
-    Description:
+    Description: "Nate Gateway ID for the route"
 
   SubnetId:
     Type: String
-    Description:
+    Description: "Subnet ID for the route"
 
   Name:
     Type: String
-    Description:
+    Description: "Name for the route table"
 
 Resources:
   PrivateRouteTable:

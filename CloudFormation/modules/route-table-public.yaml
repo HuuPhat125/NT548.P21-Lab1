@@ -4,21 +4,21 @@ Description: "Public Route Table Module"
 Parameters:
   VpcId:
     Type: String
-    Description:
+    Description: "VPC ID for the security group"
 
   InternetGatewayId:
     Type: String
-    Description:
+    Description: "Internet Gateway ID for the public route"
 
   SubnetId:
     Type: String
-    Description:
+    Description: "Subnet ID for the public route"
 
   Name:
     Type: String
-    Description:
+    Description: "Name for the route table"
 
-Resource:
+Resources:
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:

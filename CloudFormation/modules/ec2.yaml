@@ -31,6 +31,9 @@ Parameters:
     Type: String
     Description: Name tag for EC2 instance
 
+Conditions:
+  HasPublicIp: !Equals [!Ref AssociatePublicIp, "true"]
+
 Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
@@ -38,9 +41,6 @@ Resources:
       ImageId: !Ref AMI
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyName
-      SubnetId: !Ref SubnetId
-      SecurityGroupIds:
-        - !Ref SecurityGroupId
 
       NetworkInterfaces:
         - AssociatePublicIpAddress: !Ref AssociatePublicIp
@@ -60,4 +60,5 @@ Outputs:
     Value: !GetAtt EC2Instance.PrivateIp
 
   PublicIP:
+    Condition: HasPublicIp
     Value: !GetAtt EC2Instance.PublicIp

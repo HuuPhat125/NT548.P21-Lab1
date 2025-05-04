@@ -4,7 +4,7 @@ Description: "EC2 Instance"
 Parameters:
   VpcId:
     Type: String
-    Description:
+    Description: "VPC ID for the security group"
 
   PublicSecurityGroupId:
     Type: String
@@ -16,11 +16,11 @@ Resources:
     Properties:
       VpcId: !Ref VpcId
       GroupName: private-sg
-      GroupDescription: Allow SSH only from public SG
+      GroupDescription: Allow SSH only from private SG
+      GroupDescription: "Security group for private instances" # Added required description
 
       SecurityGroupIngress:
-        - CidrIp: !Ref AllowedSSHIp
-          FromPort: 22
+        - FromPort: 22
           IpProtocol: tcp
           ToPort: 22
           SourceSecurityGroupId: !Ref PublicSecurityGroupId
@@ -33,7 +33,7 @@ Resources:
 
       Tags:
         - Key: Name
-          Value: public-sg
+          Value: private-sg
 
 Outputs:
   PrivateSGId:

@@ -18,7 +18,8 @@ Parameters:
     Description: CIDR block for private subnet
 
   AvailabilityZone:
-    Type: String
+    Type: AWS::EC2::AvailabilityZone::Name
+    Default: "ap-southeast-1a"
     Description: Availability Zone for subnets
 
   AllowedSSHIp:
@@ -26,7 +27,7 @@ Parameters:
     Description: Allowed IP for SSH access
 
   AMI:
-    Type: String
+    Type: AWS::EC2::Image::Id
     Description: "AMI ID for EC2"
 
   InstanceType:
@@ -35,14 +36,14 @@ Parameters:
     Description: "EC2 instance type"
 
   KeyName:
-    Type: String
+    Type: AWS::EC2::KeyPair::KeyName
     Description: "Key pair name for EC2"
 
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: "./modules/vpc.yaml"
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/vpc.yaml"
       Parameters:
         VpcCIDR: !Ref VpcCidr
 
@@ -50,7 +51,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/internet-gateway.yaml"
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/internet-gateway.yaml"
       Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         Name: "my-igw"
@@ -59,7 +60,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/subnet.yaml"
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/subnet.yaml"
       Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         SubnetCIDR: !Ref PublicSubnetCidr
@@ -71,7 +72,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/subnet.yaml"
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/subnet.yaml"
       Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         SubnetCIDR: !Ref PrivateSubnetCidr
@@ -83,7 +84,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: [PublicSubnet, InternetGatewayStack]
     Properties:
-      TemplateURL: "./modules/internet-gateway.yaml"
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/nat-gateway.yaml"
       Parameters:
         PublicSubnetID: !GetAtt PublicSubnet.Outputs.SubnetId
 
@@ -91,8 +92,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/route-table-private.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/route-table-private.yaml"
+      Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         SubnetId: !GetAtt PrivateSubnet.Outputs.SubnetId
         NATGatewayId: !GetAtt NATGatewayStack.Outputs.NATGatewayID
@@ -102,8 +103,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/route-table-public.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/route-table-public.yaml"
+      Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         SubnetId: !GetAtt PublicSubnet.Outputs.SubnetId
         InternetGatewayId: !GetAtt InternetGatewayStack.Outputs.InternetGatewayId
@@ -113,8 +114,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/security-group-public.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/security-group-public.yaml"
+      Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         AllowedSSHIp: !Ref AllowedSSHIp
 
@@ -122,8 +123,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/security-group-public.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/security-group-private.yaml"
+      Parameters:
         VpcId: !GetAtt VPCStack.Outputs.VpcId
         PublicSecurityGroupId: !GetAtt SGPublicStack.Outputs.PublicSGId
 
@@ -131,8 +132,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/ec2.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/ec2.yaml"
+      Parameters:
         AMI: !Ref AMI
         SubnetId: !GetAtt PublicSubnet.Outputs.SubnetId
         InstanceType: !Ref InstanceType
@@ -145,14 +146,14 @@ Resources:
     Type: AWS::CloudFormation::Stack
     DependsOn: VPCStack
     Properties:
-      TemplateURL: "./modules/ec2.yaml"
-      Parameter:
+      TemplateURL: "https://cloudformation-bucket-2025.s3.amazonaws.com/CloudFormation/modules/ec2.yaml"
+      Parameters:
         AMI: !Ref AMI
         SubnetId: !GetAtt PrivateSubnet.Outputs.SubnetId
         InstanceType: !Ref InstanceType
         KeyName: !Ref KeyName
         SecurityGroupId: !GetAtt SGPrivateStack.Outputs.PrivateSGId
-        AssociatePrivateIp: false
+        AssociatePublicIp: false
         InstanceName: Private-ec2
 
 Outputs:
