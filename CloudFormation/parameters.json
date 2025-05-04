@@ -1,0 +1,38 @@
+[
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "your_key_pair"
+  },
+  {
+    "ParameterKey": "PublicSubnetCidr",
+    "ParameterValue": "10.0.1.0/24"
+  },
+  {
+    "ParameterKey": "PrivateSubnetCidr",
+    "ParameterValue": "10.0.2.0/24"
+  },
+  {
+    "ParameterKey": "VpcCidr",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "ap-southeast-1a"
+  },
+  {
+    "ParameterKey": "AllowedSSHIp",
+    "ParameterValue": "your_ssh_IP/32"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t2.micro"
+  },
+  {
+    "ParameterKey": "AMI",
+    "ParameterValue": "ami-xxxxxxxxxxxxxxxxx"
+  },
+  {
+    "ParameterKey": "BucketName",
+    "ParameterValue": "your_bucket_name"
+  }
+]
