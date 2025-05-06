@@ -106,28 +106,24 @@ Open the `CloudFormation/parameters.json` file and update the values:
 [
   {
     "ParameterKey": "KeyName",
-    "ParameterValue": "lab1"
+    "ParameterValue": "your-key-name"
   },
   {
     "ParameterKey": "ImageId",
-    "ParameterValue": "ami-0123456789abcdef0"
+    "ParameterValue": "ami-xxxxxxxxxxxxxxxxxxx"
+  },
+  {
+    "ParameterKey": "AvailabilityZone",
+    "ParameterValue": "ap-southeast-1a"
   },
   {
     "ParameterKey": "AllowedSSHIp",
-    "ParameterValue": "203.0.113.25/32"
+    "ParameterValue": "your-ip/32"
   },
-  {
-    "ParameterKey": "AvailabilityZone1",
-    "ParameterValue": "us-east-1a"
-  },
-  {
-    "ParameterKey": "AvailabilityZone2",
-    "ParameterValue": "us-east-1b"
-  }
 ]
 ```
 
-> Ensure the parameters match the template's requirements.
+> **Note:** The `ParameterValue` of `BucketName` must match the bucket name you will create in the next step.
 
 ---
 
