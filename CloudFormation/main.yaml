@@ -159,7 +159,7 @@ Resources:
         KeyName: !Ref KeyName
         SecurityGroupId: !GetAtt SGPrivateStack.Outputs.PrivateSGId
         AssociatePublicIp: false
-        InstanceName: Private-ec2
+        InstanceName: private-ec2
 
 Outputs:
   VpcId:
