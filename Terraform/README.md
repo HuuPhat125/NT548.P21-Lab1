@@ -116,10 +116,5 @@ Destroy all resources when not in use to avoid costs:
 ```bash
 terraform destroy
 ```
-
----
-
-Here is the content formatted as a section for your `README.md`, using fenced code blocks and clear steps:
-
 ---
 
