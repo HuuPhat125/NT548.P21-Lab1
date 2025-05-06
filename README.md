@@ -1,10 +1,17 @@
-# Team Members
+<p align="center">
+  <a href="https://www.uit.edu.vn/"><img src="https://www.uit.edu.vn/sites/vi/files/banner.png"></a>
+<h1 align="center"><b>NT548.P21 - DevOps Technology and Applications</b></h1>
+  
+---
+  
+# Author Information
+**Group 21**
 
-Group 21
+- **Le Binh Nguyen** - 22520969
+- **Dang Huu Phat** - 22521065
+- **Chau The Vi** - 22521653
 
-- **Đặng Hữu Phát**
-- **Lê Bình Nguyên**
-- **Châu Thế Vĩ**
+**Lecturer**: Mr. Le Anh Tuan - tuanla@uit.edu.vn
 
 ---
 
