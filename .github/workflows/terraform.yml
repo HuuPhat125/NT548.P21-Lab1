@@ -7,32 +7,29 @@ on:
       - '.github/workflows/terraform.yml'
 
 jobs:
-  checkov:
-    name: Checkov Security Scan
+  terraform_ci:
+    name: Terraform Security Scan & Deployment
     runs-on: ubuntu-latest
+    environment: production
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python for Checkov
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Install Checkov
-        run: pip install checkov
+        run: pip install -q checkov
 
       - name: Run Checkov on Terraform code
         run: checkov -d Terraform/ -s
 
-  terraform:
-    name: Terraform Plan & Apply
-    runs-on: ubuntu-latest
-    needs: checkov
-    environment: production
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Get public IP of GitHub runner
+        run: |
+          echo "MY_IP=$(curl -s https://checkip.amazonaws.com)/32" >> $GITHUB_ENV
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -54,10 +51,12 @@ jobs:
 
       - name: Terraform Plan
         working-directory: Terraform
-        run: terraform plan -out=tfplan
+        run: terraform plan -var="my_ip=${{ env.MY_IP }}" -out=tfplan
 
-      # Uncomment to enable auto apply
-      # - name: Terraform Apply
-      #   if: github.ref == 'refs/heads/main'
-      #   working-directory: Terraform
-      #   run: terraform apply -auto-approve tfplan
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        working-directory: Terraform
+        run: terraform apply -auto-approve tfplan
+
+      - name: Run infrastructure tests
+        run: bash ./test_infra.sh terraform
