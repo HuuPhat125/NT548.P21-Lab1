@@ -48,5 +48,5 @@ jobs:
           terraform plan -var="allowed_ssh_ip=${{ env.MY_IP }}" -out=tfplan
           terraform apply -auto-approve tfplan
           bash ../test_infra.sh terraform
-          terraform destroy -var="allowed_ssh_ip=${{ env.MY_IP }}"
+          terraform destroy -var="allowed_ssh_ip=${{ env.MY_IP }}" -auto-approve
  
