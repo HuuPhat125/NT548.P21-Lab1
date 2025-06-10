@@ -51,7 +51,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: Terraform
-        run: terraform plan -var="my_ip=${{ env.MY_IP }}" -out=tfplan
+        run: terraform plan -var="allowed_ssh_ip=${{ env.MY_IP }}" -out=tfplan
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
