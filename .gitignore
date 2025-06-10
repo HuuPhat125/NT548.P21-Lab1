@@ -30,7 +30,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
-
+aws_cleanup.py
 # Ignore transient lock info files created by terraform apply
 .terraform.tfstate.lock.info
 
